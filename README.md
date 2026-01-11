@@ -16,7 +16,7 @@ An autonomous, high-performance maze-solving robot built on the **Raspberry Pi P
 | **Motors** | N20 6V 150RPM with Encoders |
 | **Sensors** | 3x Sharp GP2Y0A41SK0F (Front, Left, Right) |
 | **IMU** | MPU-6050 (Gyroscope for turn precision) |
-| **Power** | 7.4V 500mAh LiPo Battery |
+| **Power** | 7.4V LiPo Battery regulated via **L7805 IC** (5V Logic) |
 
 ## 🔌 Connection Table
 **Microcontroller:** Raspberry Pi Pico 2
@@ -49,15 +49,15 @@ An autonomous, high-performance maze-solving robot built on the **Raspberry Pi P
 The robot implements an advanced **Weighted Flood Fill** algorithm. Unlike basic solvers that only look for the shortest geometric path, this system calculates the **fastest** path by accounting for the physical limitations of the robot (acceleration vs. turning deceleration).
 
 ### **Phase 1: The "Mental Map" (Initialization)**
-* **The Grid:** A digital 16x16 coordinate system.
-* **Goal Orientation:** The center cells (7,7), (7,8), (8,7), (8,8) are assigned a potential value of `0`.
+* **The Grid:** A digital 10x10 coordinate system (20cm x 20cm unit squares).
+* **Goal Orientation:** The target point is the center of the maze. The center cells (4,4), (4,5), (5,4), and (5,5) [using 0-based indexing] are assigned a potential value of `0`.
 * **Initial Flood:** The algorithm performs a breadth-first search (BFS) from the center outward, assigning a "distance-to-goal" value to every cell assuming no walls exist.
 
 ### **Phase 2: The Search Phase (Exploration)**
 * **Heuristic Movement:** The robot always moves toward the adjacent cell with the lowest potential value.
 * **Live Mapping:** As the robot enters a cell, the three Sharp IR sensors (Front, Left, Right) scan for walls.
 * **Dynamic Re-Flooding:** If a new wall is detected, it is stored in memory and the "Potential Field" (the numbers) is immediately recalculated. 
-* **Safety Bias:** If two paths have the same weight, the logic prioritizes "Openness"—choosing the path that keeps the robot away from dead ends to minimize stall risk.
+* **Safety Bias:** If two paths have the same weight, the logic prioritizes "Openness"—choosing the path that keeps the robot away from walls to reduce the risk of crashing.
 
 ### **Phase 3: The "Weighted" Calculation (Speed Optimization)**
 To solve the "Short vs. Fast" problem, the robot assigns **Cost Points** to every potential move:
