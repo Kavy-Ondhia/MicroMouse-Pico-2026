@@ -13,6 +13,7 @@
 struct Cell {
     uint8_t distance;
     bool walls[4];
+    bool visited; 
 };
 
 class MazeManager {
@@ -21,11 +22,12 @@ public:
 
     MazeManager() { initMaze(); }
 
-    // Sets up the 10x10 grid with outer boundaries and starting cell walls
+    // Sets up the grid with boundaries and the start cell configuration
     void initMaze() {
         for (int x = 0; x < MAZE_SIZE; x++) {
             for (int y = 0; y < MAZE_SIZE; y++) {
                 cells[x][y].distance = 255; // Initialize as "infinity"
+                cells[x][y].visited = false;
                 for (int i = 0; i < 4; i++) cells[x][y].walls[i] = false;
                 
                 // Set outer boundary walls
@@ -35,43 +37,58 @@ public:
                 if (x == 0)             setWall(x, y, WEST, true);
             }
         }
-        // Competition starting cell (0,0) usually has West, South, and East walls
+        // Starting cell (0,0) usually has West, South, and East walls
         setWall(0, 0, SOUTH, true);
         setWall(0, 0, WEST, true);
         setWall(0, 0, EAST, true);
     }
 
-    // CRITICAL: Ensures when a wall is added to one cell, 
-    // the neighbor cell is also updated (Symmetry).
+    // Ensures wall symmetry between neighboring cells
     void setWall(int x, int y, int dir, bool present) {
         if (x < 0 || x >= MAZE_SIZE || y < 0 || y >= MAZE_SIZE) return;
         
         cells[x][y].walls[dir] = present;
 
-        // Update the neighbor cell on the other side of the wall
         if (dir == NORTH && y < MAZE_SIZE - 1) cells[x][y + 1].walls[SOUTH] = present;
         if (dir == SOUTH && y > 0)             cells[x][y - 1].walls[NORTH] = present;
         if (dir == EAST  && x < MAZE_SIZE - 1) cells[x + 1][y].walls[WEST]  = present;
         if (dir == WEST  && x > 0)             cells[x - 1][y].walls[EAST]  = present;
     }
 
-    // Returns the direction (0-3) that leads to the lowest distance value
-    int getBestDirection(int x, int y) {
-        uint8_t min_dist = cells[x][y].distance;
+    // Call this whenever the robot enters a cell
+    void markVisited(int x, int y) {
+        if (x >= 0 && x < MAZE_SIZE && y >= 0 && y < MAZE_SIZE) {
+            cells[x][y].visited = true;
+        }
+    }
+
+    /**
+     * Returns the direction (0-3) that leads to the best path.
+     * @param isReturning If true, applies a discovery bonus to unvisited cells.
+     */
+    int getBestDirection(int x, int y, bool isReturning) {
+        float best_score = 1000.0;
         int best_dir = -1;
         
-        // N, E, S, W coordinate modifiers
         int dx[] = {0, 1, 0, -1};
         int dy[] = {1, 0, -1, 0};
 
         for (int i = 0; i < 4; i++) {
-            // Only consider directions without a wall
+            // Only consider directions without a physical wall
             if (!cells[x][y].walls[i]) {
                 int nx = x + dx[i];
                 int ny = y + dy[i];
+
                 if (nx >= 0 && nx < MAZE_SIZE && ny >= 0 && ny < MAZE_SIZE) {
-                    if (cells[nx][ny].distance < min_dist) {
-                        min_dist = cells[nx][ny].distance;
+                    float current_score = (float)cells[nx][ny].distance;
+
+                    // Apply Exploration Bias: subtract from score to make unvisited cells more attractive
+                    if (isReturning && !cells[nx][ny].visited) {
+                        current_score -= 3.0; // The "Curiosity" factor
+                    }
+
+                    if (current_score < best_score) {
+                        best_score = current_score;
                         best_dir = i;
                     }
                 }
@@ -80,16 +97,23 @@ public:
         return best_dir;
     }
 
-    // Classic Flood Fill algorithm to calculate distances to the center
-    void floodFill() {
-        // Reset all distances to max
+    /** * Calculates distances to a specific target cell using Flood Fill.
+     * For Search Phase: floodFill(4, 5)
+     * For Return Phase: floodFill(0, 0)
+     */
+    void floodFill(int targetX, int targetY) {
+        // Reset all distances
         for (int x = 0; x < MAZE_SIZE; x++) {
             for (int y = 0; y < MAZE_SIZE; y++) cells[x][y].distance = 255;
         }
 
-        // Set the 4 center goal cells to distance 0
-        cells[4][4].distance = 0; cells[4][5].distance = 0;
-        cells[5][4].distance = 0; cells[5][5].distance = 0;
+        // Set target destination to 0
+        if (targetX == 4 || targetX == 5) { // Center 2x2 Goal
+             cells[4][4].distance = 0; cells[4][5].distance = 0;
+             cells[5][4].distance = 0; cells[5][5].distance = 0;
+        } else {
+             cells[targetX][targetY].distance = 0;
+        }
 
         bool changed = true;
         while (changed) {
@@ -103,7 +127,6 @@ public:
                     
                     for (int i = 0; i < 4; i++) {
                         int nx = x + dx[i], ny = y + dy[i];
-                        // If there is no wall and the neighbor's distance is higher than it should be
                         if (nx >= 0 && nx < MAZE_SIZE && ny >= 0 && ny < MAZE_SIZE && !cells[x][y].walls[i]) {
                             if (cells[nx][ny].distance > cells[x][y].distance + 1) {
                                 cells[nx][ny].distance = cells[x][y].distance + 1;
