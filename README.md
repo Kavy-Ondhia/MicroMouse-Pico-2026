@@ -44,11 +44,39 @@ An autonomous, high-performance maze-solving robot built on the **Raspberry Pi P
 | **Pin 32** | GP27_A1 | Left Sensor | Analog Output (Vo) |
 | **Pin 34** | GP28_A2 | Right Sensor | Analog Output (Vo) |
 
-## 🧠 Navigation Logic: Weighted Flood Fill
-Unlike basic maze solvers that simply count steps, this robot uses a **Cost-Based Weighted Logic**.
-- **Movement Cost:** Moving into an adjacent cell has a base cost of $10$.
-- **Turn Penalty:** If the move requires a 90° turn, an additional penalty of $+20$ is added.
-- **Result:** The robot doesn't just find the *shortest* path; it finds the *fastest* path with the fewest turns.
+## 🧠 Advanced Navigation: Weighted Flood Fill
+
+The robot implements an advanced **Weighted Flood Fill** algorithm. Unlike basic solvers that only look for the shortest geometric path, this system calculates the **fastest** path by accounting for the physical limitations of the robot (acceleration vs. turning deceleration).
+
+### **Phase 1: The "Mental Map" (Initialization)**
+* **The Grid:** A digital 16x16 coordinate system.
+* **Goal Orientation:** The center cells (7,7), (7,8), (8,7), (8,8) are assigned a potential value of `0`.
+* **Initial Flood:** The algorithm performs a breadth-first search (BFS) from the center outward, assigning a "distance-to-goal" value to every cell assuming no walls exist.
+
+### **Phase 2: The Search Phase (Exploration)**
+* **Heuristic Movement:** The robot always moves toward the adjacent cell with the lowest potential value.
+* **Live Mapping:** As the robot enters a cell, the three Sharp IR sensors (Front, Left, Right) scan for walls.
+* **Dynamic Re-Flooding:** If a new wall is detected, it is stored in memory and the "Potential Field" (the numbers) is immediately recalculated. 
+* **Safety Bias:** If two paths have the same weight, the logic prioritizes "Openness"—choosing the path that keeps the robot away from dead ends to minimize stall risk.
+
+### **Phase 3: The "Weighted" Calculation (Speed Optimization)**
+To solve the "Short vs. Fast" problem, the robot assigns **Cost Points** to every potential move:
+* **Straight Move:** 10 Points.
+* **90-Degree Turn:** 30 Points (accounts for braking and pivot time).
+
+**Example:**
+* **Path A (Short):** 5 cells + 2 turns = **110 Points**.
+* **Path B (Longer):** 7 cells + 0 turns = **70 Points**.
+* **Decision:** The robot selects **Path B** because it is mathematically "cheaper" and physically faster.
+
+### **Phase 4: Return & Refine (Mapping)**
+After reaching the goal, the robot returns to (0,0). During the return trip, it intentionally explores "high-probability" areas of the maze to discover potential high-speed straightaways that were missed during the initial run.
+
+### **Phase 5: The Speed Run (Execution)**
+Once the fastest path is locked in:
+* **Path Smoothing:** The discrete cell-to-cell moves are converted into continuous motion commands.
+* **Acceleration Profiles:** The Pico 2 calculates S-curve acceleration and deceleration points.
+* **Execution:** The robot follows the pre-calculated path at maximum velocity, using sensors only for "Wall Following" (micro-adjustments to stay centered) rather than navigation.
 
 ## 📂 Project Structure
 * `/src`: Final Arduino (.ino) and configuration (.h) files.
