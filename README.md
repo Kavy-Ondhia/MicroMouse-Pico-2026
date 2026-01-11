@@ -78,6 +78,16 @@ Once the fastest path is locked in:
 * **Acceleration Profiles:** The Pico 2 calculates S-curve acceleration and deceleration points.
 * **Execution:** The robot follows the pre-calculated path at maximum velocity, using sensors only for "Wall Following" (micro-adjustments to stay centered) rather than navigation.
 
+## Simulation
+We use a Python-based simulator to test the Flood Fill algorithm before deploying it to the physical robot.
+
+![Maze Simulator Screenshot](./media/simulation_screenshot.png)
+
+## How to run the Simulation
+1. Install Python.
+2. Install Pygame: `pip install pygame`
+3. Run: `python simulation/sim.py`
+
 ## 📂 Project Structure
 * `/src`: Final Arduino (.ino) and configuration (.h) files.
 * `/hardware`: Schematic diagrams and PCB layouts (In Progress).
