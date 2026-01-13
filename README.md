@@ -2,6 +2,9 @@
 
 An autonomous, high-performance maze-solving robot built on the **Raspberry Pi Pico 2** using the Arduino C++ framework. This project is designed for professional Micromouse competitions, focusing on high-speed navigation and intelligent pathfinding.
 
+![Project Status](https://img.shields.io/badge/Status-Development-orange)
+![Platform](https://img.shields.io/badge/Platform-Raspberry_Pi_Pico_2-C51A4A?logo=raspberry-pi&logoColor=white)
+
 ## 📺 Project in Action
 
 ### **Simulation Discovery Phase**
@@ -11,10 +14,8 @@ An autonomous, high-performance maze-solving robot built on the **Raspberry Pi P
   <img src="media/Run2_Micromouse.gif" width="45%" alt="Dry Run 2">
 </p>
 <p align="center">
-  <b>Run 1</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Run 2</b>
+  <b>Run 1</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Run 2</b>
 </p>
-
-<br>
 
 ---
 
