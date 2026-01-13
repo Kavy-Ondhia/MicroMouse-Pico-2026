@@ -10,6 +10,9 @@ An autonomous, high-performance maze-solving robot built on the **Raspberry Pi P
   <img src="media/Run1_Micromouse.gif" width="45%" alt="Dry Run 1">
   <img src="media/Run2_Micromouse.gif" width="45%" alt="Dry Run 2">
 </p>
+<p align="center">
+  <b>Run 1</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Run 2</b>
+</p>
 
 <br>
 
