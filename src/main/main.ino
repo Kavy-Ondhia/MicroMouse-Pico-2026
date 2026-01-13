@@ -17,10 +17,15 @@ RobotState currentState = SEARCHING_1;
 MazeManager myMaze;
 int currentX = 0, currentY = 0, currentDir = NORTH;
 
+// Function Prototypes (Stubs for Hardware)
+uint16_t getDistance(int sensorPin);
+void drive(int leftSpeed, int rightSpeed);
+void turn90(bool clockwise);
+
 void setup() {
   Serial.begin(115200);
   
-  // Initialize Pins (Assumes PIN_STBY, PIN_BUTTON, etc. are in Configuration.h)
+  // Initialize Pins
   pinMode(PIN_STBY, OUTPUT);
   pinMode(PIN_BUTTON, INPUT_PULLUP);
   digitalWrite(PIN_STBY, HIGH);
@@ -39,13 +44,13 @@ void loop() {
   }
 
   // --- 1. SENSE & REACTIVE UPDATE ---
-  // Mark current cell as visited using the new bitmask helper
   myMaze.markVisited(currentX, currentY);
   bool wallFound = false;
   
-  float f = getDistance(SENSOR_FRONT_PIN);
-  float l = getDistance(SENSOR_LEFT_PIN);
-  float r = getDistance(SENSOR_RIGHT_PIN);
+  // TRON: Changed to uint16_t to avoid unnecessary float math
+  uint16_t f = getDistance(SENSOR_FRONT_PIN);
+  uint16_t l = getDistance(SENSOR_LEFT_PIN);
+  uint16_t r = getDistance(SENSOR_RIGHT_PIN);
 
   // Check Front Wall
   if (f < WALL_THRESHOLD) { 
@@ -54,7 +59,7 @@ void loop() {
       wallFound = true; 
     } 
   }
-  // Check Left Wall (currentDir - 1)
+  // Check Left Wall
   if (l < WALL_THRESHOLD) { 
     int leftDir = (currentDir + 3) % 4;
     if(!myMaze.hasWall(currentX, currentY, leftDir)) { 
@@ -62,7 +67,7 @@ void loop() {
       wallFound = true; 
     } 
   }
-  // Check Right Wall (currentDir + 1)
+  // Check Right Wall
   if (r < WALL_THRESHOLD) { 
     int rightDir = (currentDir + 1) % 4;
     if(!myMaze.hasWall(currentX, currentY, rightDir)) { 
@@ -74,20 +79,17 @@ void loop() {
   // --- 2. THINK: Recalculate if map changed ---
   if (wallFound) {
     if (currentState == RETURNING_1 || currentState == RETURNING_2) {
-      myMaze.floodFill(0, 0); // Goal is Start
+      myMaze.floodFill(0, 0); 
     } else {
-      myMaze.floodFill(4, 4); // Goal is Center
+      myMaze.floodFill(4, 4); 
     }
   }
 
   // --- 3. DECIDE ---
   int bestDir;
   if (currentState == RETURNING_2) {
-    // Use the optimized Priority logic you built for Run 2 return
     bestDir = myMaze.getPriorityDirection(currentX, currentY, currentDir);
   } else {
-    // Use the weighted distance logic for exploration
-    // Note: Ensure getWeightedDirection in Maze.h is updated to use hasWall()
     bestDir = myMaze.getWeightedDirection(currentX, currentY, currentDir, (currentState == RETURNING_1));
   }
 
@@ -97,36 +99,34 @@ void loop() {
   }
 
   // --- 4. MOVE ---
-  // Handle Turning
   if (bestDir != currentDir) {
     int turnDiff = (bestDir - currentDir + 4) % 4;
-    if (turnDiff == 1) turn90(true);       // Right Turn
-    else if (turnDiff == 3) turn90(false); // Left Turn
-    else if (turnDiff == 2) {              // 180 Turn
+    if (turnDiff == 1) turn90(true);       
+    else if (turnDiff == 3) turn90(false); 
+    else if (turnDiff == 2) {              
       turn90(true); 
       turn90(true); 
     }
     currentDir = bestDir;
   }
 
-  // Drive Forward one cell
   drive(BASE_SPEED, BASE_SPEED);
-  delay(MOVE_TIME_PER_CELL); // This should ideally be handled by encoders
+  delay(MOVE_TIME_PER_CELL); 
   
   if (currentDir == NORTH) currentY++; 
   else if (currentDir == EAST)  currentX++;
   else if (currentDir == SOUTH) currentY--; 
   else if (currentDir == WEST)  currentX--;
   
-  drive(0, 0); // Brief stop to stabilize sensors
+  drive(0, 0); 
   delay(100);
 
   // --- 5. STATE TRANSITIONS ---
   uint8_t dist = myMaze.cells[currentX][currentY].distance;
   
-  if (dist == 0) { // We reached the current goal
+  if (dist == 0) { 
     drive(0, 0); 
-    delay(1000); // Victory pause
+    delay(1000); 
     
     if (currentState == SEARCHING_1) { 
       currentState = RETURNING_1; 
@@ -142,7 +142,22 @@ void loop() {
     }
     else if (currentState == RETURNING_2) { 
       currentState = READY_FOR_SPEED; 
-      Serial.println("Map optimized. Ready for Speed Run!");
+      Serial.println("Goal Reached! Ready for Speed Run.");
     }
   }
+}
+
+// --- HARDWARE ABSTRACTION LAYER (HAL) ---
+
+uint16_t getDistance(int sensorPin) {
+  // TODO: Implement VL53L0X I2C reading here once hardware arrives
+  return 8190; // Default to 'no wall'
+}
+
+void drive(int leftSpeed, int rightSpeed) {
+  // TODO: Implement PWM motor control
+}
+
+void turn90(bool clockwise) {
+  // TODO: Implement gyro/encoder based turning
 }
