@@ -1,9 +1,3 @@
-<p align="center">
-  <a href="https://hits.sh/github.com/Kavy-Ondhia/MicroMouse-Pico-2026/">
-    <img alt="Hits" src="https://hits.sh/github.com/Kavy-Ondhia/MicroMouse-Pico-2026.svg?label=UNIQUE%20VIEWS&color=263159&extraCount=57"/>
-  </a>
-</p>
-
 <h1 align="center">MicroMouse-Pico-2026 🐭</h1>
 
 An autonomous, high-performance maze-solving robot built on the **Raspberry Pi Pico 2** using the Arduino C++ framework. This project is designed for professional Micromouse competitions, focusing on high-speed navigation and intelligent pathfinding.
