@@ -116,6 +116,10 @@ A Pygame-based environment that mimics the physical robot's state machine across
 3. Export your layout and paste it into `sim.py`.
 4. Run: `python sim.py`
 
+## 💡 Feedback
+Since many of you are cloning the repo to test the simulation, I'd love to hear your thoughts! 
+Please [open an issue](https://github.com/Kavy-Ondhia/MicroMouse-Pico-2026/issues) if you find a maze layout that breaks the Flood Fill logic.
+
 ### **Robot Deployment**
 1. Open `main.ino` in the Arduino IDE.
 2. Ensure you have the **Raspberry Pi Pico 2** board support installed (Earle Philhower core recommended).
