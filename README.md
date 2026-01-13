@@ -2,6 +2,12 @@
 
 An autonomous, high-performance maze-solving robot built on the **Raspberry Pi Pico 2** using the Arduino C++ framework. This project is designed for professional Micromouse competitions, focusing on high-speed navigation and intelligent pathfinding.
 
+## 📺 Project in Action
+### **Simulation Discovery Phase**
+![Run 1(Dry Run 1)](media/Run1_Micromouse.gif)
+![Run 2(Dry Run 2)](media/Run2_Micromouse.gif)
+*The robot explores the maze, dynamically updating its distance-to-goal values (Flood Fill) as new walls are discovered.*
+
 ## 🚀 Key Features
 - **Processor:** Powered by the RP2350 (Cortex-M33) for high-speed calculation.
 - **Algorithm:** Weighted Flood Fill with **Priority Frontier** exploration.
