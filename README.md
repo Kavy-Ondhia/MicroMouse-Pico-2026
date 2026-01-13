@@ -1,10 +1,15 @@
-# MicroMouse-Pico-2026 🐭
+<p align="center">
+  <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FKavy-Ondhia%2FMicroMouse-Pico-2026&count_bg=%23263159&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=UNIQUE+VIEWS&edge_flat=true" />
+  <img src="https://img.shields.io/badge/Platform-Raspberry_Pi_Pico_2-C51A4A?logo=raspberry-pi&logoColor=white" />
+  <img src="https://img.shields.io/badge/Language-C++%20%2F%20Python-orange?logo=python&logoColor=white" />
+</p>
+
+<h1 align="center">MicroMouse-Pico-2026 🐭</h1>
 
 An autonomous, high-performance maze-solving robot built on the **Raspberry Pi Pico 2** using the Arduino C++ framework. This project is designed for professional Micromouse competitions, focusing on high-speed navigation and intelligent pathfinding.
 
 ![Project Status](https://img.shields.io/badge/Status-Development-orange)
 ![Platform](https://img.shields.io/badge/Platform-Raspberry_Pi_Pico_2-C51A4A?logo=raspberry-pi&logoColor=white)
-![Visitors](https://api.visitorbadge.io/api/visitors?path=Kavy-Ondhia.MicroMouse-Pico-2026&label=REPO%20VIEWS&countColor=%23263159&style=flat-square)
 
 ## 📺 Project in Action
 
