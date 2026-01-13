@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "Configuration.h"
 
+// Define directions as bit indices
 #define NORTH 0
 #define EAST  1
 #define SOUTH 2
@@ -11,8 +12,9 @@
 
 struct Cell {
     uint8_t distance;
-    bool walls[4];
-    bool visited;
+    // We use a single byte (8 bits). 
+    // Bits 0-3 will be walls (N,E,S,W). Bit 4 will be 'visited'.
+    uint8_t data; 
 };
 
 class MazeManager {
@@ -25,9 +27,9 @@ public:
         for (int x = 0; x < MAZE_SIZE; x++) {
             for (int y = 0; y < MAZE_SIZE; y++) {
                 cells[x][y].distance = 255;
-                cells[x][y].visited = false;
-                for (int i = 0; i < 4; i++) cells[x][y].walls[i] = false;
+                cells[x][y].data = 0; // Clear all walls and visited status
                 
+                // Set perimeter walls using our new helper
                 if (y == MAZE_SIZE - 1) setWall(x, y, NORTH, true);
                 if (x == MAZE_SIZE - 1) setWall(x, y, EAST, true);
                 if (y == 0)             setWall(x, y, SOUTH, true);
@@ -36,57 +38,91 @@ public:
         }
     }
 
-    void setWall(int x, int y, int dir, bool present) {
-        if (x < 0 || x >= MAZE_SIZE || y < 0 || y >= MAZE_SIZE) return;
-        cells[x][y].walls[dir] = present;
-        if (dir == NORTH && y < MAZE_SIZE - 1) cells[x][y + 1].walls[SOUTH] = present;
-        if (dir == SOUTH && y > 0)             cells[x][y - 1].walls[NORTH] = present;
-        if (dir == EAST  && x < MAZE_SIZE - 1) cells[x + 1][y].walls[WEST]  = present;
-        if (dir == WEST  && x > 0)             cells[x - 1][y].walls[EAST]  = present;
+    // --- NEW HELPER FUNCTIONS FOR BITS ---
+    
+    // Check if a wall exists in a specific direction
+    bool hasWall(int x, int y, int dir) {
+        // (1 << dir) creates a mask. e.g. if dir is 2 (SOUTH), mask is 00000100
+        // We Use bitwise AND (&) to check if that bit is 1
+        return (cells[x][y].data & (1 << dir));
+    }
+
+    bool isVisited(int x, int y) {
+        // We use the 5th bit (index 4) for visited
+        return (cells[x][y].data & (1 << 4));
     }
 
     void markVisited(int x, int y) {
         if (x >= 0 && x < MAZE_SIZE && y >= 0 && y < MAZE_SIZE) {
-            cells[x][y].visited = true;
+            // Bitwise OR (|) turns a bit ON
+            cells[x][y].data |= (1 << 4);
         }
     }
 
-    // This matches the Python "Priority Queue" logic
+    void setWall(int x, int y, int dir, bool present) {
+        if (x < 0 || x >= MAZE_SIZE || y < 0 || y >= MAZE_SIZE) return;
+        
+        if (present) {
+            cells[x][y].data |= (1 << dir); // Turn bit ON
+        } else {
+            cells[x][y].data &= ~(1 << dir); // Turn bit OFF
+        }
+
+        // Update neighbors
+        if (dir == NORTH && y < MAZE_SIZE - 1) {
+            if (present) cells[x][y + 1].data |= (1 << SOUTH);
+            else         cells[x][y + 1].data &= ~(1 << SOUTH);
+        }
+        if (dir == SOUTH && y > 0) {
+            if (present) cells[x][y - 1].data |= (1 << NORTH);
+            else         cells[x][y - 1].data &= ~(1 << NORTH);
+        }
+        if (dir == EAST && x < MAZE_SIZE - 1) {
+            if (present) cells[x + 1][y].data |= (1 << WEST);
+            else         cells[x + 1][y].data &= ~(1 << WEST);
+        }
+        if (dir == WEST && x > 0) {
+            if (present) cells[x - 1][y].data |= (1 << EAST);
+            else         cells[x - 1][y].data &= ~(1 << EAST);
+        }
+    }
+
+    // --- LOGIC UPDATES TO MATCH NEW DATA STRUCTURE ---
+
     int getPriorityDirection(int x, int y, int currentHeading) {
         int best_dir = -1;
         bool found_unvisited = false;
         uint8_t min_dist = 255;
-
         int dx[] = {0, 1, 0, -1};
         int dy[] = {1, 0, -1, 0};
 
         for (int i = 0; i < 4; i++) {
-            if (!cells[x][y].walls[i]) {
+            // UPDATED: Use hasWall helper instead of array access
+            if (!hasWall(x, y, i)) { 
                 int nx = x + dx[i], ny = y + dy[i];
                 if (nx >= 0 && nx < MAZE_SIZE && ny >= 0 && ny < MAZE_SIZE) {
-                    bool targetVisited = cells[nx][ny].visited;
+                    // UPDATED: Use isVisited helper
+                    bool targetVisited = isVisited(nx, ny); 
                     uint8_t targetDist = cells[nx][ny].distance;
 
-                    // Priority 1: Unvisited cells with lower/equal distance
-                    // Priority 2: Visited cells with lower distance
                     if (!found_unvisited && !targetVisited) {
-                        // First unvisited neighbor found
-                        found_unvisited = true;
-                        min_dist = targetDist;
-                        best_dir = i;
+                        found_unvisited = true; min_dist = targetDist; best_dir = i;
                     } else if (!targetVisited && targetDist < min_dist) {
-                        // Better unvisited neighbor
-                        min_dist = targetDist;
-                        best_dir = i;
+                        min_dist = targetDist; best_dir = i;
                     } else if (!found_unvisited && targetDist < min_dist) {
-                        // No unvisited found yet, pick lowest distance visited neighbor
-                        min_dist = targetDist;
-                        best_dir = i;
+                        min_dist = targetDist; best_dir = i;
                     }
                 }
             }
         }
         return best_dir;
+    }
+    
+    // (Added simplified getWeightedDirection logic placeholder if needed)
+    int getWeightedDirection(int x, int y, int currentHeading, bool returnMode) {
+        // Implement similarly using !hasWall(x,y,i)
+        // For now, returning -1 to ensure it compiles, you paste your logic here
+        return -1; 
     }
 
     void floodFill(int targetX, int targetY) {
@@ -94,7 +130,6 @@ public:
             for (int y = 0; y < MAZE_SIZE; y++) cells[x][y].distance = 255;
         }
 
-        // Handle center goal block
         if (targetX == 4 || targetX == 5) {
              cells[4][4].distance = 0; cells[4][5].distance = 0;
              cells[5][4].distance = 0; cells[5][5].distance = 0;
@@ -111,7 +146,8 @@ public:
                     int dx[] = {0, 1, 0, -1}, dy[] = {1, 0, -1, 0};
                     for (int i = 0; i < 4; i++) {
                         int nx = x + dx[i], ny = y + dy[i];
-                        if (nx >= 0 && nx < MAZE_SIZE && ny >= 0 && ny < MAZE_SIZE && !cells[x][y].walls[i]) {
+                        // UPDATED: Use hasWall helper
+                        if (nx >= 0 && nx < MAZE_SIZE && ny >= 0 && ny < MAZE_SIZE && !hasWall(x,y,i)) {
                             if (cells[nx][ny].distance > cells[x][y].distance + 1) {
                                 cells[nx][ny].distance = cells[x][y].distance + 1;
                                 changed = true;
