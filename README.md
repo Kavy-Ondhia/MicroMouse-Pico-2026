@@ -4,6 +4,7 @@ An autonomous, high-performance maze-solving robot built on the **Raspberry Pi P
 
 ![Project Status](https://img.shields.io/badge/Status-Development-orange)
 ![Platform](https://img.shields.io/badge/Platform-Raspberry_Pi_Pico_2-C51A4A?logo=raspberry-pi&logoColor=white)
+![Visitors](https://api.visitorbadge.io/api/visitors?path=Kavy-Ondhia.MicroMouse-Pico-2026&label=REPO%20VIEWS&countColor=%23263159&style=flat-square)
 
 ## 📺 Project in Action
 
