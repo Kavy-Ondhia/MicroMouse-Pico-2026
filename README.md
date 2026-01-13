@@ -1,5 +1,7 @@
 <p align="center">
-  <img src="https://komarev.com/ghpvc/?user=Kavy-Ondhia&repo=MicroMouse-Pico-2026&label=UNIQUE+VIEWS&color=263159&style=flat-square" alt="Unique Visitors" />
+  <a href="https://hits.sh/github.com/Kavy-Ondhia/MicroMouse-Pico-2026/">
+    <img alt="Hits" src="https://hits.sh/github.com/Kavy-Ondhia/MicroMouse-Pico-2026.svg?label=UNIQUE%20VIEWS&color=263159&extraCount=57"/>
+  </a>
 </p>
 
 <h1 align="center">MicroMouse-Pico-2026 🐭</h1>
