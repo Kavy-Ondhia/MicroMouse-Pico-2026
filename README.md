@@ -44,10 +44,8 @@ An autonomous, high-performance maze-solving robot built on the **Raspberry Pi P
 
 | Standard Pin | KiCad Symbol Label | Component | Function |
 | :--- | :--- | :--- | :--- |
-| **Pin 39** | VSYS | L7805 IC (Pin 3) | **+5V Input** (System Power) |
-| **Pin 38** | GND | Common GND | **Ground** |
-| **Pin 6** | GP4 | MPU-6050 | SDA (I2C Data) |
-| **Pin 7** | GP5 | MPU-6050 | SCL (I2C Clock) |
+| **Pin 6** | GP4 | MPU-6050 + 3x Sensors | SDA (I2C Data) |
+| **Pin 7** | GP5 | MPU-6050 + 3x Sensors | SCL (I2C Clock) |
 | **Pin 15** | GP11 | TB6612FNG | PWMB (Left Speed) |
 | **Pin 16** | GP12 | TB6612FNG | BIN1 (Left Direction 1) |
 | **Pin 17** | GP13 | TB6612FNG | BIN2 (Left Direction 2) |
@@ -60,9 +58,9 @@ An autonomous, high-performance maze-solving robot built on the **Raspberry Pi P
 | **Pin 26** | GP20 | N20 Encoder (R) | Phase B |
 | **Pin 27** | GP21 | TB6612FNG | STBY (Standby Pin) |
 | **Pin 29** | GP22 | Push Button | Start/Stop Input |
-| **Pin 31** | GP26_A0 | Front Sensor | Analog Output (Vo) |
-| **Pin 32** | GP27_A1 | Left Sensor | Analog Output (Vo) |
-| **Pin 34** | GP28_A2 | Right Sensor | Analog Output (Vo) |
+| **Pin 31** | GP26 | Front Sensor | XSHUT (Address Control) |
+| **Pin 32** | GP27 | Left Sensor | XSHUT (Address Control) |
+| **Pin 34** | GP28 | Right Sensor | XSHUT (Address Control) |
 
 
 
